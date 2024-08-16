@@ -1,0 +1,114 @@
+
+"""
+Created on Fri Aug 16 09:44:35 2024
+
+@author: asrajend
+
+https://leetcode.com/problems/number-of-islands/
+
+"""
+import pprint
+
+
+# grid1 = [
+#   ["1","1","1","1","0"],
+#   ["1","1","0","1","0"],
+#   ["1","1","0","0","0"],
+#   ["0","0","0","0","0"]
+# ]
+# print("Input Grid1")
+# pprint.pprint(grid1)
+
+grid2 = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+print("Input Grid2")
+pprint.pprint(grid2)
+ 
+def getNeighbour(row, col, maxrow, maxcol):
+    neigh = []
+    top = [row, col - 1] if col -1 >=0 else None
+    bottom = [row, col +1] if col +1 < maxcol else None
+    left = [row-1, col] if row -1 >= 0 else None
+    right = [row+1, col] if row +1 < maxrow else None
+    if top is not None:
+        neigh.append(top)
+    if bottom is not None:
+        neigh.append(bottom)
+    if left is not None:
+        neigh.append(left)
+    if right is not None:
+        neigh.append(right)
+    # print(f"neighbours of row={row} col={col} are {neigh}")
+    return neigh
+
+def island(grid, row, col):
+    return grid[row][col] == '1'
+
+def isvisited(grid, row, col):
+    return grid[row][col] != '1' and grid[row][col] != '0'
+
+class stack():
+    def __init__(self):
+        self.stack = []
+    
+    def push(self, row, col):
+        if [row, col] not in self.stack:
+            self.stack.append([row,col])
+    
+    def pop(self):
+        if len(self.stack) == 0:
+            return []
+        return self.stack.pop()
+    
+    def stackprint(self):
+        for n in self.stack:
+            print(n)
+    
+    def isNotEmpty(self):
+        return len(self.stack) > 0
+
+def findNoIsland(grid):
+    maxrow = len(grid)
+    maxcol = len(grid[0])
+    noisland = 0
+    # count = 0
+    # print(f"maxrow = {maxrow} maxcol = {maxcol}")
+    for row in range(maxrow):
+        for col in range(maxcol):
+            # print(f"now check on row={row} col={col}")
+            if isvisited(grid, row, col) is False:
+                if island(grid, row, col) is True:
+                    noisland +=1
+                    obj = stack()
+                    # print(f"trying to push row={row} and col={col} to land")
+                    obj.push(row,col)
+                    while obj.isNotEmpty():
+                        # print("Stack is not empty")
+                        # count += 1
+                        # if count >= (maxrow * maxcol):
+                        #     print(f" value is count={count} breaking loop...fix me....")
+                        #     break
+                        # obj.stackprint()
+                        if len(obj.stack) > 0 :
+                            land = obj.pop()
+                            lrow = land[0]
+                            lcol = land[1]
+                            grid[lrow][lcol] = '-1'
+                            neigh = getNeighbour(lrow, lcol, maxrow, maxcol)
+                            for land in neigh:
+                                if island(grid, land[0], land[1]):
+                                    obj.push(land[0], land[1])
+                else:
+                    grid[row][col] = '-2'
+            # else:
+            #     print(f"already visited row={row} col={col}")
+            
+            
+    print(f"Number of island {noisland}")
+    pprint.pprint(grid)
+                 
+findNoIsland(grid2)                  
